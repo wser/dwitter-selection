@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my Dwitter.net selection</title>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <script>
+      // constants
+      var c = document.querySelector('#c');
+      // c.width = 1920;
+      // c.height = 1080;
+      c.width = 500;
+      c.height = 300;
+      var w = c.width,
+        h = c.height;
+      var FPS = 60;
+      var x = c.getContext('2d');
+      var S = Math.sin;
+      var C = Math.cos;
+      var T = Math.tan;
+      function R(r, g, b, a) {
+        a = a === undefined ? 1 : a;
+        return 'rgba(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ',' + a + ')';
+      }
+
+      // parameters
+      var time = 0;
+      var frame = 0;
+      var nextFrameMs = 0;
+      var playing = true;
+      var delay = 50; //miliseconds
+
+      //animate u function
+      (function loop(frame_time) {
+        if (playing) {
+          requestAnimationFrame(loop);
+          epsilon = 1.5; // Acounts for different timestamp resolution and slight jitter
+          if (frame_time < nextFrameMs - epsilon) {
+            return; // Skip this cycle as we are animating too quickly.
+          }
+          nextFrameMs = Math.max(nextFrameMs + 1000 / FPS, frame_time);
+        }
+        time = frame / FPS;
+        if ((time * FPS) | (0 == frame - 1)) {
+          time += 0.000001;
+        }
+        frame++;
+        u(frame);
+      })(delay);
+
+      var expr = 14;
+
+      // animation functions under 140 chars - ditter.net
+      // prettier-ignore
+      function u(t) {
+        switch (expr) {
+          case 1:
+            for (r = Math.random, i = 2e3; i--; )
+              (X = r((Y = r((Z = r()))))),(x.fillStyle = R((a = X / Y / Z),Y / Z / X,(b = Z / X / Y),0.2)),
+                x.fillRect(2e3 * r() - 99, w * r(), T(a ^ i) / r(), T(b ^ i) / r());
+
+            break; // 138/140 - lasers in the dark
+
+          case 2:
+            FPS=2
+            for (q=c.width |= i = 20; i--; x.stroke())
+              x.moveTo(!x.beginPath((x.lineWidth = i)), (k = (i * q/4 + t * 2e3) % (q + 2e3))),
+                x.lineTo(k - S(5 * t) * 200, 0);
+
+            break; // 139/140
+
+          case 3:
+            with(x)
+              for(r=Math.random,X=r(Y=r(Z=r())),j=255;j--;fillStyle=R(X*j*4,Y*208,Z/Y/X*42,.11),beginPath(fill()))
+                arc(2e3*r(),1080*r(),Y/r(),0,Z*7)
+            
+            break; // 140/140 - art circles color
+
+          case 4:
+            for (r = Math.random, i = 255; i--; x.fillRect(2e3 * r() - i / 2, 1152 * r() - i * 2, 0.4 / e, 26 / e))
+              x.fillStyle = R((a = r() / r() / r()), a * 3, a * 9, (e = (a ** 3 % 99) / 300) );
+            
+            break; // 125/140 - rain
+          
+          case 5:          
+            var seed = 4, d=10; c.width *= 1;FPS=15
+            for (i = 43; i--; )
+              for (j = 71; j--; )
+                x.fillRect(j * d + S(i / seed + t) * 100 - 100, i * d + C(j / seed + t) * 100 - 100, d, d);
+              
+            break; // 114/140
+
+          case 6:          
+            q = t / 25; 
+            x.fillRect(0, 0, 2e3, 2e3);
+            for (i = 500; i--; )
+              x.clearRect(w + S(t - i * q) * (w/4 - i), h + C(t - i * q) * (h/3 - i + S(t) * 10), 8, 8);
+              
+            break; // 112/140
+
+          case 7: 
+            FPS=1         
+            with (x)
+              for (fillRect(0, 0, 2e3, 2e3), q = i = 200; i--; beginPath(
+                fill(arc(w + q * T(S(i + t) + i),h + (400 * C(C(i) + i * 2 - t * 2) * i) / q, i/5, 0, 7)))
+              )
+            fillStyle = R(i * i, i);
+              
+            break; // 139/140
+
+          case 8: 
+            for (c.width |= k = i = w; --i; )
+            x.fillText(
+              (q = S((j = i / k + t / 4) * 9)) > 0 ? '♂️' : '♀️',
+              k - i * C(j) + S((m = k * j)) * (r = 1e5 / i),
+              h + C(m) * r - i * S(j)
+            ),
+              (x.font = ((r * q ** 2) >> 5) + 'em');
+              
+            break; // 140/140
+
+          case 9: 
+          FPS=5
+            c.width|=0
+            for(j=12;j--;)for(i=69,h=0;a=47+43*S(i/6+t),i--;h+=a)i+j&1||x.fillRect(h,j*90,a,90)
+              
+            break; // 94/140 - animation-recreation of "Movement in Squares" by Bridget Riley 1961
+
+          case 10: 
+          FPS=5
+            r=Math.random,b=64;with(x)for(j=h;j--;beginPath(fill()))
+            fillStyle=R(a=r()/r()/r(),a,a,a/b),arc(b*(j%31),b*(j/31|0),r()*b,0,7)
+              
+            break; // 128/140 - b/w animation circles
+
+          case 11: 
+            c.width^=0;x.translate(w,h);for(i=0;i++<90;)x.lineTo(0,i*15),
+            x.rotate(i/6),x.fill(),x.globalCompositeOperation='xor'
+              
+            break; // 121/140 - abstract
+
+          case 12:
+            A=a=>a*Math.random();Y=A(1e3);
+            x.fillStyle=R(A(q=256),e=A(X=A(2e3))/4,e);
+              for(i=0;i<q;i++)x.fillRect(X+i*C(T(z=X+i/q)),Y+i*S(T(z*3)),9,20-i/9)
+
+            break; // 140/140 - painting in action
+
+          case 13:
+            r=Math.random;
+            for(i=2e3;i-=2*r()|0>0;
+            t||x.strokeRect(-32,-32,64,64))x.setTransform(s=r(),0,0,s,60*(i%17+8),60*(i/17%17+1|0)),x.rotate(r()/9)
+
+            break; // 140/140 - A #tribute to _(Dés)Ordres_ -- Vera Molnár, 1974
+          
+          case 14:
+          for(i=1;i<390;i++){
+          if(i%3){x.fillStyle='#fff';x.rotate(-.9)}else{x.fillStyle='#000';x.rotate(.9)}
+          x.fillRect(t,i*5,T(i)*10,T(t))}
+
+            break; // 130/140 - Generative glitch art
+
+          default:
+            console.log(`Sorry, we are out of ${expr}.`);
+        }
+      }
+    </script>
+    <script></script>
+  </body>
+</html>
