@@ -5,45 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>my Dwitter.net selection</title>
     <style>
-      .container {
-        background: #e7e7e7;
-        padding: 5%;
+      .flex-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+
+        flex-wrap: wrap;
+        width: 600px;
+
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        width: 80%;
       }
 
-      .one,
+      .one {
+        flex: 0.05;
+        height: auto;
+      }
       .two {
-        background: #ccc;
-        display: inline-block;
-        padding: 2%;
+        flex: 0.95;
+        height: auto;
+      }
+      .three {
+        flex-basis: 100%;
+        height: 50px;
+      }
+      @media only screen and (max-width: 500px) {
+        .one {
+          flex-basis: 10%;
+          order: 1;
+        }
+        .two {
+          flex-basis: 90%;
+          order: 2;
+        }
+        .three {
+          flex-basis: 100%;
+          order: 3;
+        }
+      }
+
+      #c {
+        width: 100%;
+        height: auto;
       }
 
       #list {
+        border: 0px;
+        outline: 0px;
         overflow-y: auto;
-        width: 30px;
+        width: 50px;
+        max-height: 280px;
         text-align: center;
+      }
+      #four {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-bottom: -2%;
       }
     </style>
   </head>
   <body>
-    <section class="container">
+    <div class="flex-container">
       <div class="one">
-        <select id="list" name="list" multiple onchange="loop()"></select>
+        <select id="list" name="list" multiple onchange="switchExpr()"></select>
       </div>
       <div class="two">
         <canvas id="c"></canvas>
       </div>
-    </section>
+      <div class="three"></div>
+      <div id="four">Hello World</div>
+    </div>
 
     <script>
       // constants
       const list = document.getElementById('list');
+      const func = document.querySelector('.three');
+      const chlen = document.querySelector('#four');
       const c = document.querySelector('#c');
-      // c.width = 1920;
-      // c.height = 1080;
-      c.width = 400;
-      c.height = 288;
+
+      // parameters
       var w = c.width;
       var h = c.height;
       var FPS = 60;
@@ -51,48 +98,61 @@
       var S = Math.sin;
       var C = Math.cos;
       var T = Math.tan;
+
       function R(r, g, b, a) {
         a = a === undefined ? 1 : a;
         return 'rgba(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ',' + a + ')';
       }
 
-      // parameters
-      let t = 0;
-      var frame = 0;
-
       // animation functions under 140 chars - ditter.net
       // prettier-ignore
       const array_of_functions = [
         // 138/140 - lasers in the dark
-        () => { for(r=Math.random,i=2e3;i--;)(X=r((Y=r((Z=r()))))),(x.fillStyle=R((a=X/Y/Z),Y/Z/X,(b=Z/X/Y),0.2)),x.fillRect(2e3*r()-99,w*r(),T(a^i)/r(),T(b^i)/r()); },
+        () => { for(r=Math.random,i=2e3;i--;)(X=r((Y=r((Z=r()))))),(x.fillStyle=R((a=X/Y/Z),Y/Z/X,(b=Z/X/Y),0.2)),x.fillRect(2e3*r()-99,w*r(),T(a^i)/r(),T(b^i)/r())  },
         // 140/140 - art circles color
         () => { with(x)for(r=Math.random,X=r(Y=r(Z=r())),j=255;j--;fillStyle=R(X*j*4,Y*208,Z/Y/X*42,.11),beginPath(fill()))arc(2e3*r(),1080*r(),Y/r(),0,Z*7)          },
         // 125/140 - rain
         () => { for(r=Math.random,i=255;i--;x.fillRect(2e3*r()-i/2,1152*r()-i*2,0.4/e,26/e))x.fillStyle=R((a=r()/r()/r()),a*3,a*9,(e=(a**3%99)/300));                 },
         // 128/140 - b/w animation circles
         () => { r=Math.random,b=64;with(x)for(j=h;j--;beginPath(fill()))fillStyle=R(a=r()/r()/r(),a,a,a/b),arc(b*(j%31),b*(j/31|0),r()*b,0,7)                         },
-        // 140/140 - painting in action
-        () => { q=256;A=a=>a*Math.random();Y=A(1e3);x.fillStyle=R(A(q),e=A(X=A(2e3))/4,e);for(i=0;i<q;i++)x.fillRect(X+i*C(T(z=X+i/q)),Y+i*S(T(z*3)),9,20-i/9)        },
 
       ]
 
       // populate the list with number of options
-      list.size = 17;
       for (let i = 0; i < array_of_functions.length; i++) {
-        const option = new Option(i, i);
+        let option = new Option(i, i);
         list.add(option, undefined); // add it to the list
+      }
+
+      function expr() {
+        // get selected list item number
+        return parseInt(list.value, 10) || 0;
+      }
+
+      // return number of chars in function
+      function lngth(e) {
+        // prettier-ignore
+        var functionToText = String(array_of_functions[e]).replace(/ +/g, ''); //remove space from string
+        func.innerHTML = functionToText;
+        chlen.innerHTML = `number of chars = ${functionToText.length - 6}`;
       }
 
       //get selected expresion and animate
       function loop() {
-        let expr = parseInt(list.value, 10) || 0;
-        array_of_functions[expr]();
-
-        requestAnimationFrame(loop);
-        t = frame / FPS;
-        if ((t * FPS) | (0 == frame - 1)) t += 0.000001;
-        frame++;
+        // activate selected function expression from an array
+        array_of_functions[expr()]();
+        // speed inhibitor
+        setTimeout(() => requestAnimationFrame(loop), 200);
       }
+
+      function switchExpr() {
+        c.width |= 0; // shorthand to reset canvas
+        let e = expr();
+        lngth(e);
+        loop(e);
+      }
+
+      document.onload = switchExpr();
     </script>
   </body>
 </html>
